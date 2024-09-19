@@ -53,3 +53,5 @@ production:
   database: <%= ENV["GATE_DATABASE"]%>
   username: <%= ENV["GATE_DATABASE_USER"]%>
   password: <%= ENV["GATE_DATABASE_PASSWORD"] %>
+  host: <%= ENV["GATE_DATABASE_HOST"] %>
+  port: <%= ENV["GATE_DATABASE_PORT"] %>
