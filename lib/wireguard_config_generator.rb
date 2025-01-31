@@ -30,9 +30,10 @@ class WireguardConfigGenerator
       config += "[Peer]\n"
       config += "PublicKey = #{vpn_configuration.wg_public_key}\n"
       config += "Endpoint = #{vpn_configuration.wg_ip_address}:#{vpn_configuration.wg_port}\n"
-      config += "AllowedIPs = #{vpn_configuration.server_vpn_ip_address}/32\n"
-      vpn_configuration.network_addresses.each do |ip_address|
-        config += "AllowedIPs = #{ip_address.network_address}\n"
+      config += "AllowedIPs = 0.0.0.0/0\n"
+      #config += "AllowedIPs = #{vpn_configuration.server_vpn_ip_address}/32\n"
+      #vpn_configuration.network_addresses.each do |ip_address|
+      #  config += "AllowedIPs = #{ip_address.network_address}\n"
       end
       # config += "PersistentKeepalive = 25\n" if vpn_configuration.wg_keep_alive.present?
       config += "\n"
