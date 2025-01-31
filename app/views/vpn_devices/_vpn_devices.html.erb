@@ -93,15 +93,7 @@
                 <h6 class="card-title"> <%= vpn_device.ip_allocation.ip_address %></h6>
               </div>
             </div>
-            <div class="row">
-              <div class="col-sm-4">
-                <h6 class="card-title">Accessible remote networks</h6>
-              </div>
-              <div class="col-sm-8">
-                <td></td>
-                <h6 class="card-title"> <%= @vpn_configuration.network_addresses.map(&:network_address).join(", ") %></h6>
-              </div>
-            </div>
+        
             <br/>
 
             <%= link_to 'Download Configuration', download_config_path(vpn_device.id), class: 'btn btn-primary btn-sm' %>
