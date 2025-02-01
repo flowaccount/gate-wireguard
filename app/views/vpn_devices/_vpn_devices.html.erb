@@ -1,5 +1,4 @@
 <% vpn_devices_require_updates = vpn_devices.select { |device| (device.description.nil? or device.description.length == 0) } %>
-
 <% if vpn_devices_require_updates.count > 0 %>
   <br/>
   <h6>Please add description to the followig device(s), devices with no description can't have configuration</h6>
@@ -37,7 +36,7 @@
 <% end %>
 
 <% if vpn_devices_require_updates.count == 0 %>
-  <%= link_to 'Add a VPN Device', new_vpn_device_path, class: 'btn btn-primary btn-sm' %>
+  <%= button_to 'Add a VPN Device', new_vpn_device_path, class: 'btn btn-primary btn-sm' %>
 <% end %>
 
 <br>
