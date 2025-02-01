@@ -51,7 +51,6 @@ class VpnDevicesController < ApplicationController
   def create
     config_file = params[:config_file]
     output, status = Open3.capture2e("sudo wg-quick up #{config_file}")
-    redirect_to :back
     if status.success?
       redirect_to vpn_devices_path, notice: 'WireGuard interface created successfully.'
     else
