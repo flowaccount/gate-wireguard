@@ -16,7 +16,7 @@
                 <td>
                     <div class="form-check">
 
-                        <%= form_with url: update_users_admin_path(@user), method: :patch, remote: false do |form| %>
+                        <%= form_with url: update_users_admin_path(user), method: :patch, remote: false do |form| %>
   <%= form.check_box :active, { 
         onchange: 'this.form.submit();', 
         disabled: current_user == user, 
