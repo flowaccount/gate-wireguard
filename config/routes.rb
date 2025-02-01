@@ -12,7 +12,6 @@ Rails.application.routes.draw do
   get 'auth/:provider/callback', to: 'sessions#create'
   get 'auth/failure', to: redirect('/')
   get 'logout', to: 'sessions#destroy', as: 'logout'
-  get 'vpn_devices/new', to: 'vpn_devices#new', as: 'new_vpn_device'
   get 'admin/users'
   patch 'admin/user/:id', to: 'admin#update_users_admin', as: 'update_users_admin'
 
