@@ -9,7 +9,7 @@
         </tr>
     </thead>
     <tbody>
-        <% @users.each do |user ,index| %>
+        <% @users.each_with_index do |user , index| %>
             <tr>
                 <td><%= index %></td>
                 <td><%= user.name %></td>
