@@ -32,7 +32,7 @@ class AdminController < ApplicationController
   def vpn_configurations
     if current_user.admin?
       @vpn_configuration = VpnConfiguration.get_vpn_configuration
-
+      @all_vpn_configuration = VpnConfiguration.all
     else
       redirect_to root_path, alert: 'You are not authorized to access this page.'
     end

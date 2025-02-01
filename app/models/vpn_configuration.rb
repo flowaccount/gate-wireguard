@@ -9,6 +9,7 @@ class VpnConfiguration < ApplicationRecord
       configure_vpn
     else
       @vpn_configurations.first
+      @all_vpn_configuration = VpnConfiguration.all
     end
   end
 
