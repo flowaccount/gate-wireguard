@@ -36,7 +36,7 @@
 <% end %>
 
 <% if vpn_devices_require_updates.count == 0 %>
-  <%= button_tag "Add a VPN Device", onclick: "window.location.href="/vpn_devices/new"", class: "btn btn-primary btn-sm" %>
+  <%= button_tag "Add a VPN Device", onclick: "window.location.href='#{new_vpn_device_path}'", class: "btn btn-primary btn-sm" %>
 <% end %>
 <br>
 <br>
