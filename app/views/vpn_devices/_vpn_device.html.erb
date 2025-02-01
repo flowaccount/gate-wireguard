@@ -13,8 +13,8 @@
     <tr>
       <td><%= index+1 %></td>
       <td><%= vpn_device.user.name %></td>
-      <td><%= link_to vpn_device.description, vpn_device %></td>
-      <td><%= link_to 'Destroy', vpn_device, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %></td>
+      <td><%= button_to vpn_device.description, vpn_device %></td>
+      <td><%= button_to 'Destroy', vpn_device, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %></td>
     </tr>
   <% end %>
   </tbody>
