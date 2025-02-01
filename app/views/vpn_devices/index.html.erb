@@ -6,6 +6,7 @@
   <table class="table table-striped table-hover">
     <thead class="table-light">
     <tr>
+      <th>Row</th>
       <th>User</th>
       <th>Device description</th>
       <th colspan="2"></th>
@@ -13,8 +14,9 @@
     </thead>
 
     <tbody>
-    <% @vpn_devices.each do |vpn_device| %>
+    <% @vpn_devices.each_with_index do |vpn_device,index| %>
       <tr>
+        <td><%= index+1 %></td>
         <td><%= vpn_device.user.name %></td>
         <td><%= vpn_device.description %></td>
 
