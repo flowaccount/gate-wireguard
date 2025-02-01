@@ -2,6 +2,7 @@
 
 class FirewallController < ApplicationController
   before_action :require_login
+  before_action :get_iptables_rules, only: %i[show edit update destroy]
   # before_action :set_vpn_configuration, only: %i[ show update edit ]
   layout 'admin'
 
@@ -14,10 +15,10 @@ class FirewallController < ApplicationController
   def get_iptables_rules
     command = "sudo iptables -L -n -v --line-number"
     
-    stdout, stderr, status = Open3.capture2e(command)
+    output, status = Open3.capture2e(command)
     
     if status.success?
-      stdout # Return iptables output
+      output # Return iptables output
     else
       "Error fetching iptables rules: #{stderr}" # Handle errors
     end
