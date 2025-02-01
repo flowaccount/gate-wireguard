@@ -9,11 +9,10 @@
   </thead>
 
   <tbody>
-  <% @vpn_devices.each do |vpn_device,index| %>
+  <% @vpn_devices.each_with_index do |vpn_device,index| %>
     <tr>
-      <td><%= index %></td>
+      <td><%= index+1 %></td>
       <td><%= vpn_device.user.name %></td>
-      # <td><%= vpn_device.description %></td>
       <td><%= link_to vpn_device.description, vpn_device %></td>
       <td><%= link_to 'Destroy', vpn_device, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %></td>
     </tr>
