@@ -7,6 +7,7 @@ class AdminController < ApplicationController
 
   def index
     @vpn_configuration = VpnConfiguration.all.first
+    @all_vpn_configuration = VpnConfiguration.all
     return unless @vpn_configuration.nil?
 
     redirect_to admin_vpn_configurations_path
