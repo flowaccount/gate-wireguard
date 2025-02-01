@@ -22,7 +22,9 @@ class AdminController < ApplicationController
 
   def update_users_admin
     if current_user.admin?
-      @users = User.all
+      @user = User.find(params[:id])
+      @user.admin = !@user.admin
+      @user.save!
     else
       redirect_to root_path, alert: 'You are not authorized to access this page.'
     end
