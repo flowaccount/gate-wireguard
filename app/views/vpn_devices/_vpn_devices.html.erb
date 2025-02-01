@@ -36,9 +36,10 @@
 <% end %>
 
 <% if vpn_devices_require_updates.count == 0 %>
-  <%= button_to 'Add a VPN Device', new_vpn_device_path, class: 'btn btn-primary btn-sm' %>
+<%= form_with url: new_vpn_device_path, method: :patch, remote: false do |form| %>
+  <%= form.submit "Add a VPN Devic", class: "btn btn-primary btn-sm" %>
 <% end %>
-
+<% end %>
 <br>
 <br>
 
