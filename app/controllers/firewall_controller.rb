@@ -1,4 +1,4 @@
-require 'open3'
+
 
 class FirewallController < ApplicationController
   before_action :require_login
@@ -14,7 +14,7 @@ class FirewallController < ApplicationController
   def get_iptables_rules
     command = "sudo iptables -L -n -v --line-number"
     
-    stdout, stderr, status = Open3.capture3(command)
+    stdout, stderr, status = Open3.capture2e(command)
     
     if status.success?
       stdout # Return iptables output
