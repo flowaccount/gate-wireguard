@@ -20,7 +20,7 @@ class FirewallController < ApplicationController
 
   # Handle form submission
   def create
-    @firewall = Firewall.new(rules_params)
+    @firewall = Firewall.new(firewall_params)
     if @firewall.save
       output, status = Open3.capture2e("sudo ipset add #{@firewall.name} #{@firewall.ipAddress}")
       if status.success?
@@ -28,12 +28,14 @@ class FirewallController < ApplicationController
       else
         redirect_to firewall_index_path, alert: "Failed to create WireGuard interface:\n#{output}"
       end
+    else
+      render :new
     end
   end
 
   private
 
-  def rules_params
+  def firewall_params
     params.require(:firewall).permit(:name, :ipAddress)
   end
 
