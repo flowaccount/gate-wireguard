@@ -7,9 +7,9 @@
     <% end %>
   </span>
 
-  <span>Allowed IPs:
-  <%= raw @allowed_ips_output%>
-  </span>
+  <br/>
+  <span>Rules Name: <%= @rule_name%></span>
+  <span>Allowed IPs: <%= raw @allowed_ips_output%></span>
 <% end %>
 
 <br/><br/>
@@ -17,15 +17,15 @@
 <%= form_for @firewall do |f|  %>
     <div>
       <%= f.label :name, "Name Rule" %>
-      <%= f.text_field :name , disabled: true %>
+      <%= f.text_field :name , value: @rule_name, disabled: true %>
     </div>
-  
+    <br/>
     <div>
       <%= f.label :ipAddress, "IP Allow" %>
       <%= f.text_field :ipAddress %>
     </div>
-  
+    <br/>
     <div>
-      <%= f.submit "Submit" %>
+      <%= f.submit "Submit", class: "btn btn-primary" %>
     </div>
   <% end %>

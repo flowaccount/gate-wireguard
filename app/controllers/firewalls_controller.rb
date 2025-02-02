@@ -24,7 +24,7 @@ class FirewallsController < ApplicationController
     output, status = Open3.capture2e("sudo ipset add #{@firewall.name} #{@firewall.ipAddress}")
     if status.success?
       flash[:notice] = "Add Allowed IP Address: #{@firewall.name}"
-      render js: "window.location.reload();"  # Refresh page after success
+      render plain: "Success Add Allowed IP", status: :ok
     else
       render :index, alert: "Failed to create WireGuard interface:\n#{output}"
     end
@@ -36,8 +36,7 @@ class FirewallsController < ApplicationController
     if name
       @allowed_ips_output = get_allowed_ip_addresses(name)
       # Handle active status logic here
-      @firewall = Firewall.new
-      @firewall.name = name
+      @rule_name = name
       render :index
     else
       # Handle inactive status logic here
