@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :configurations
   resources :vpn_devices
-  resources :firewall
+  resources :firewalls
   get 'dns_records/refresh', to: 'dns_records#refresh_zones', as: 'refresh_dns_records'
   resources :dns_records
   get 'home/index'
