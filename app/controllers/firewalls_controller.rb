@@ -29,6 +29,8 @@ class FirewallsController < ApplicationController
       ip = @firewall.ipAddress
       command = "sudo ipset add #{name} #{ip}"
       output, status = Open3.capture2e(command)
+      system("sudo iptables-save > /etc/iptables/rules.v4")
+      system("sudo systemctl restart iptables")
       if status.success?
         flash[:notice] = "Add Allowed IP Address: #{@firewall.name}"
         render plain: "Success Add Allowed IP", status: :ok
