@@ -37,6 +37,7 @@ class FirewallsController < ApplicationController
       @allowed_ips_output = get_allowed_ip_addresses(name)
       # Handle active status logic here
       @rule_name = name
+      @firewall.name = name
       render :index
     else
       # Handle inactive status logic here

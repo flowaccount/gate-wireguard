@@ -8,7 +8,7 @@
   </span>
 
   <br/>
-  <span>Rules Name: <%= @rule_name%></span>
+  <span>Rules Name: <%= raw @rule_name%></span>
   <span>Allowed IPs: <%= raw @allowed_ips_output%></span>
 <% end %>
 
@@ -17,7 +17,7 @@
 <%= form_for @firewall do |f|  %>
     <div>
       <%= f.label :name, "Name Rule" %>
-      <%= f.text_field :name , value: @rule_name, disabled: true %>
+      <%= f.text_field :name , value: @firewall.name, disabled: true %>
     </div>
     <br/>
     <div>
