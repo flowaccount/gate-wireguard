@@ -7,7 +7,7 @@ class FirewallsController < ApplicationController
   layout 'admin'
 
   def index
-    @allowed_ips_output = get_allowed_ip_addresses('allowed_ips')
+    @allowed_ips_output = get_allowed_ip_addresses('allowed_remotes')
     @firewall = Firewall.new
   end
 

@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   get 'admin/users'
   #get 'firewall' , to: 'firewall#index'
   #post 'firewall', to: 'firewall#create', as: 'firewall_create'
-  post 'firewalls', to: 'firewalls#update_display', as: 'update_display_rules'
+  patch 'firewalls', to: 'firewalls#update_display', as: 'update_display_rules'
 
   patch 'admin/user/:id', to: 'admin#update_users_admin', as: 'update_users_admin'
 
