@@ -1,6 +1,6 @@
 
 
-class FirewallController < ApplicationController
+class FirewallsController < ApplicationController
   before_action :require_login
   # before_action :get_iptables_rules, only: %i[show edit update destroy]
   # before_action :set_vpn_configuration, only: %i[ show update edit ]
