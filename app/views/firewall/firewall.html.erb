@@ -1,4 +1,5 @@
 <h2>Firewall Rules (iptables -L)</h2>
+<%= @allowed_ips_output%>
 
 <%= form_for :firewall, url: firewall_path do |f| %>
     <div>

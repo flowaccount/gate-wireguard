@@ -6,6 +6,10 @@ class FirewallController < ApplicationController
   # before_action :set_vpn_configuration, only: %i[ show update edit ]
   layout 'admin'
 
+  def index
+    @allowed_ips_output = get_allowed_ip_addresses
+  end
+
   def rules
     @iptables_output = get_iptables_rules
   end
@@ -25,6 +29,18 @@ class FirewallController < ApplicationController
 
   def rules_params
     params.require(:firewall).permit(:name, :ipAddress)
+  end
+
+  def get_allowed_ip_addresses
+    command = "sudo ipset list allowed_remotes"
+    
+    output, status = Open3.capture2e(command)
+    
+    if status.success?
+      output # Return iptables output
+    else
+      "Error fetching iptables rules: #{stderr}" # Handle errors
+    end
   end
 
   def get_iptables_rules
