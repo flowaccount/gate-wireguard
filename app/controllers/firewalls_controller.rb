@@ -30,8 +30,10 @@ class FirewallsController < ApplicationController
     end
   end
 
-  def update_display
-    @allowed_ips_output = get_allowed_ip_addresses(params[:firewall][:name])
+  def update_display_rules
+    name = params[:name]
+    @allowed_ips_output = get_allowed_ip_addresses(name)
+    render :index
   end
 
   private
