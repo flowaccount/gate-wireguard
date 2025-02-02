@@ -6,10 +6,12 @@
     <%= f.select :name, ["please select","allowed_remotes", "allowed_remotes_crm"], {}, { onchange: "this.form.submit();" } %>
   <% end %>
 
-  <p>Allowed IPs:</p>
+  <span>Allowed IPs:
   <%= @allowed_ips_output%>
+  </span>
 <% end %>
 
+<br/><br/>
 
 <%= form_for @firewall do |f|  %>
     <div>
