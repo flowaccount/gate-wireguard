@@ -22,15 +22,11 @@ class FirewallsController < ApplicationController
   # Handle form submission
   def create
     @firewall = Firewall.new(firewall_params)
-    if @firewall.save
-      output, status = Open3.capture2e("sudo ipset add #{@firewall.name} #{@firewall.ipAddress}")
-      if status.success?
-        redirect_to firewall_index_path, notice: 'WireGuard interface created successfully.'
-      else
-        redirect_to firewall_index_path, alert: "Failed to create WireGuard interface:\n#{output}"
-      end
+    output, status = Open3.capture2e("sudo ipset add #{@firewall.name} #{@firewall.ipAddress}")
+    if status.success?
+      redirect_to firewall_index_path, notice: 'WireGuard interface created successfully.'
     else
-      render :new
+      redirect_to firewall_index_path, alert: "Failed to create WireGuard interface:\n#{output}"
     end
   end
 
