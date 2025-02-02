@@ -31,13 +31,11 @@ class FirewallsController < ApplicationController
   end
 
   def update_display_rules
-    name = params[:rules_name]
+    rules_name = params[:rules_name]
     
-    if name
+    if rules_name
       @allowed_ips_output = get_allowed_ip_addresses(name)
       # Handle active status logic here
-      @rule_name = name
-      @firewall.name = name
       render :index
     else
       # Handle inactive status logic here
