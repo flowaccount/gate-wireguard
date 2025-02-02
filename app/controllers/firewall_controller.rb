@@ -22,7 +22,12 @@ class FirewallController < ApplicationController
   def create
     @firewall = Firewall.new(rules_params)
 
-    render @firewall
+    output, status = Open3.capture2e("sudo ipset add #{@firewall.name} #{@firewall.ipAddress}")
+    if status.success?
+      notice: 'allow .'
+    else
+      alert: "Failed to create WireGuard interface:\n#{output}"
+    end
   end
 
   private
