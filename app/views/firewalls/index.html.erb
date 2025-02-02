@@ -3,7 +3,7 @@
 <%= turbo_frame_tag "status_display" do %>
   <span>Select Name List:
     <%= form_with url: update_display_rules_path, method: :patch, remote: false do %>
-      <%= select_tag :name, options_for_select(["allowed_remotes", "allowed_remotes_crm"], selected: nil),{ onchange: "this.form.submit();", prompt: "Please select rule name" } %>
+      <%= select_tag :rules_name, options_for_select(["allowed_remotes", "allowed_remotes_crm"], selected: nil),{ onchange: "this.form.submit();", prompt: "Please select rule name" } %>
     <% end %>
   </span>
 

@@ -31,7 +31,7 @@ class FirewallsController < ApplicationController
   end
 
   def update_display_rules
-    name = params[:name]
+    name = params[:rules_name]
     
     if name
       @allowed_ips_output = get_allowed_ip_addresses(name)
