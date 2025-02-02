@@ -8,7 +8,7 @@ class FirewallController < ApplicationController
 
   def index
     @allowed_ips_output = get_allowed_ip_addresses
-    @firewall = Firewall.new
+    @firewall = Firewall.new(name: 'allowed_remotes', ipAddress: '')
   end
 
   def rules
@@ -16,7 +16,7 @@ class FirewallController < ApplicationController
   end
 
   def new
-    @firewall = Firewall.new
+    @firewall = Firewall.new(name: 'allowed_remotes', ipAddress: '')
   end
 
   # Handle form submission
