@@ -13,7 +13,6 @@ Rails.application.routes.draw do
   get 'auth/failure', to: redirect('/')
   get 'logout', to: 'sessions#destroy', as: 'logout'
   get 'admin/users'
-  get 'firewall/rules', to: 'firewall#rules'
 
   patch 'admin/user/:id', to: 'admin#update_users_admin', as: 'update_users_admin'
 
