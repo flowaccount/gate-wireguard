@@ -25,7 +25,10 @@ class FirewallsController < ApplicationController
     if @firewall.name.blank? || @firewall.name.nil? || @firewall.ipAddress.nil?
       render json: @firewall, status: :ok
     else
-      output, status = Open3.capture2e("sudo ipset add #{@firewall.name} #{@firewall.ipAddress}")
+      name = @firewall.name
+      ip = @firewall.ipAddress
+      command = "sudo ipset add #{name} #{ip}"
+      output, status = Open3.capture2e(command)
       if status.success?
         flash[:notice] = "Add Allowed IP Address: #{@firewall.name}"
         render plain: "Success Add Allowed IP", status: :ok
