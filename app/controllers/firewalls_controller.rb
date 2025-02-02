@@ -20,7 +20,7 @@ class FirewallsController < ApplicationController
 
   # Handle form submission
   def create
-    @firewall = Firewall.new(firewall_params(@rule_name))
+    @firewall = Firewall.new(firewall_params)
     #@firewall.name = @rule_name
     if @rule_name.nil? || @firewall.name.nil? || @firewall.ipAddress.nil?
       render plain: "Value Cannot Be null", status: :ok
@@ -53,8 +53,8 @@ class FirewallsController < ApplicationController
 
   private
 
-  def firewall_params(name)
-    params.require(:firewall).permit(name, :ipAddress)
+  def firewall_params
+    params.require(:firewall).permit(:name, :ipAddress)
   end
 
   def get_allowed_ip_addresses(name)
