@@ -24,7 +24,7 @@ class FirewallsController < ApplicationController
     @firewall = Firewall.new(firewall_params)
     output, status = Open3.capture2e("sudo ipset add #{@firewall.name} #{@firewall.ipAddress}")
     if status.success?
-      redirect_to firewalls_index_path, notice: 'WireGuard interface created successfully.'
+      redirect_to firewall_path  , notice: 'WireGuard interface created successfully.'
     else
       render :index, alert: "Failed to create WireGuard interface:\n#{output}"
     end
