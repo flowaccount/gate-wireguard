@@ -5,6 +5,7 @@ class FirewallsController < ApplicationController
   # before_action :get_iptables_rules, only: %i[show edit update destroy]
   # before_action :set_vpn_configuration, only: %i[ show update edit ]
   layout 'admin'
+  after_action :firewall_params, only: %i[update_display_rules]
 
   def index
     @firewall = Firewall.new
