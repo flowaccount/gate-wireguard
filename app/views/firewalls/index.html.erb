@@ -2,7 +2,7 @@
 
 <%= turbo_frame_tag "status_display" do %>
   <p>Select Name List:</p>
-  <%= form_with url: update_display_rules_path, method: :post, data: { turbo_frame: "status_display" } do |f| %>
+  <%= form_with model: @firewall,url: update_display_rules_path, method: :post, data: { turbo_frame: "status_display" } do |f| %>
     <%= f.select :name, ["please select","allowed_remotes", "allowed_remotes_crm"], {}, { onchange: "this.form.submit();" } %>
   <% end %>
 
