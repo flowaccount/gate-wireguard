@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   get 'logout', to: 'sessions#destroy', as: 'logout'
   get 'admin/users'
   #get 'firewall' , to: 'firewall#index'
-  #post 'firewall', to: 'firewall#create', as: 'firewall_create'
+  post 'firewall', to: 'firewall#create', as: 'firewall_create'
 
   patch 'admin/user/:id', to: 'admin#update_users_admin', as: 'update_users_admin'
 
