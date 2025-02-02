@@ -22,8 +22,8 @@ class FirewallsController < ApplicationController
   def create
     @firewall = Firewall.new(firewall_params)
     #@firewall.name = @rule_name
-    if @rule_name.nil? || @firewall.name.nil? || @firewall.ipAddress.nil?
-      render plain: "Value Cannot Be null", status: :ok
+    if @firewall.name.blank? || @firewall.name.nil? || @firewall.ipAddress.nil?
+      render json: @firewall, status: :ok
     else
       output, status = Open3.capture2e("sudo ipset add #{@firewall.name} #{@firewall.ipAddress}")
       if status.success?
