@@ -20,7 +20,7 @@ class FirewallController < ApplicationController
 
   # Handle form submission
   def create
-    @firewall = Firewall.new(rules_params)
+    @firewall = rules_params
 
     output, status = Open3.capture2e("sudo ipset add #{@firewall.name} #{@firewall.ipAddress}")
     if status.success?
