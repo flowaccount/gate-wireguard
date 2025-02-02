@@ -1,7 +1,7 @@
 <h2>Firewall Rules (iptables -L)</h2>
 <%= @allowed_ips_output%>
 
-<%= form_with(model: @firewall, local: true) do |form|  %>
+<%= form_for @firewall do |f|  %>
     <div>
       <%= f.label :name, "Name Rule" %>
       <%= f.text_field :name %>
