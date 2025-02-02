@@ -1,2 +1,17 @@
 <h2>Firewall Rules (iptables -L)</h2>
-<pre><%= @iptables_output %></pre>
+
+<%= form_for :firewall, url: firewall_path do |f| %>
+    <div>
+      <%= f.label :name, "Name Rule" %>
+      <%= f.text_field :name %>
+    </div>
+  
+    <div>
+      <%= f.label :ipAddress, "IP Allow" %>
+      <%= f.email_field :ipAddress %>
+    </div>
+  
+    <div>
+      <%= f.submit "Submit" %>
+    </div>
+  <% end %>

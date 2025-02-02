@@ -67,6 +67,8 @@ class WireguardConfigGenerator
       config = "[Interface]\n"
       config += "PrivateKey = #{vpn_configuration.wg_private_key}\n"
       config += "ListenPort = #{vpn_configuration.wg_port}\n"
+      config += "MTU = 1380\n"
+      config += "SaveConfig = true\n"
       config += "Address = #{vpn_configuration.server_vpn_ip_address}/24 \n\n"
 
       VpnDevice.all.each do |client|

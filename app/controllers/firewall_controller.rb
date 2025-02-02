@@ -10,7 +10,22 @@ class FirewallController < ApplicationController
     @iptables_output = get_iptables_rules
   end
 
+  def new
+    @firewall = Firewall.new
+  end
+
+  # Handle form submission
+  def create
+    @firewall = Firewall.new(rules_params)
+
+    render @firewall
+  end
+
   private
+
+  def rules_params
+    params.require(:firewall).permit(:name, :ipAddress)
+  end
 
   def get_iptables_rules
     command = "sudo iptables -L -n -v --line-number"
