@@ -24,9 +24,9 @@ class FirewallController < ApplicationController
 
     output, status = Open3.capture2e("sudo ipset add #{@firewall.name} #{@firewall.ipAddress}")
     if status.success?
-      notice: 'allow .'
+      redirect_to firewall_index_path, notice: 'WireGuard interface created successfully.'
     else
-      alert: "Failed to create WireGuard interface:\n#{output}"
+      redirect_to firewall_index_path, alert: "Failed to create WireGuard interface:\n#{output}"
     end
   end
 
