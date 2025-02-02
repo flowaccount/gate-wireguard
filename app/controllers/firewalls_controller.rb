@@ -7,7 +7,7 @@ class FirewallsController < ApplicationController
   layout 'admin'
 
   def index
-    @allowed_ips_output = get_allowed_ip_addresses
+    @allowed_ips_output = get_allowed_ip_addresses('allowed_ips')
     @firewall = Firewall.new
   end
 
@@ -31,14 +31,18 @@ class FirewallsController < ApplicationController
     end
   end
 
+  def update_display
+    @allowed_ips_output = get_allowed_ip_addresses(params[:name])
+  end
+
   private
 
   def firewall_params
     params.require(:firewall).permit(:name, :ipAddress)
   end
 
-  def get_allowed_ip_addresses
-    command = "sudo ipset list allowed_remotes"
+  def get_allowed_ip_addresses(name)
+    command = "sudo ipset list #{name} | awk 'NR > 7 { print $1 }'"
     
     output, status = Open3.capture2e(command)
     

@@ -1,5 +1,15 @@
-<h2>Firewall Rules (iptables -L)</h2>
-<%= @allowed_ips_output%>
+<h2>Rules Access</h2>
+
+<%= turbo_frame_tag "status_display" do %>
+  <p>Select Name List:</p>
+  <%= form_with url: update_display_rules_path, method: :post, data: { turbo_frame: "status_display" } do |f| %>
+    <%= f.select :name, ["allowed_remotes", "allowed_remotes_crm"], {}, { onchange: "this.form.submit();" } %>
+  <% end %>
+
+  <p>Allowed IPs:</p>
+  <%= @allowed_ips_output%>
+<% end %>
+
 
 <%= form_for @firewall do |f|  %>
     <div>
