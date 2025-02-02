@@ -8,6 +8,7 @@ class FirewallController < ApplicationController
 
   def index
     @allowed_ips_output = get_allowed_ip_addresses
+    @firewall = Firewall.new
   end
 
   def rules
