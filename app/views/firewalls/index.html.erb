@@ -17,7 +17,7 @@
 <%= form_for @firewall , method: :post do |f|  %>
     <div>
       <%= f.label :name, "Name Rule" %>
-      <%= f.text_field :name , value: @rule_name || 'please select before', disabled: true %>
+      <%= f.text_field :name , disabled: true %>
     </div>
     <br/>
     <div>
