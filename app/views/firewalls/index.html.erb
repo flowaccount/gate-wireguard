@@ -4,7 +4,7 @@
   <p>Select Name List:</p>
 
   <%= form_with url: update_display_rules_path, method: :patch, remote: false do %>
-    <%= select_tag :name, options_for_select(["please select","allowed_remotes", "allowed_remotes_crm"], selected: 'Active'),{ onchange: "this.form.submit();" } %>
+    <%= select_tag :name, options_for_select(["allowed_remotes", "allowed_remotes_crm"], selected: nil),{ onchange: "this.form.submit();", prompt: "Please select rule name" } %>
   <% end %>
 
   <span>Allowed IPs:
