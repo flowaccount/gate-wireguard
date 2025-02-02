@@ -36,10 +36,10 @@ class FirewallsController < ApplicationController
     if name
       @allowed_ips_output = get_allowed_ip_addresses(name)
       # Handle active status logic here
-      #render json: { message: 'Status is active' }, status: :ok
+      render @allowed_ips_output
     else
       # Handle inactive status logic here
-      #render json: { message: 'Status is inactive' }, status: :ok
+      render json: { message: 'Status is inactive' }, status: :ok
     end
   end
 
