@@ -32,7 +32,7 @@ class FirewallsController < ApplicationController
   end
 
   def update_display
-    @allowed_ips_output = get_allowed_ip_addresses(params[:name])
+    @allowed_ips_output = get_allowed_ip_addresses(params[:firewall][:name])
   end
 
   private
