@@ -36,10 +36,10 @@ class FirewallsController < ApplicationController
     if name
       @allowed_ips_output = get_allowed_ip_addresses(name)
       # Handle active status logic here
-      render raw: @allowed_ips_output
+      render plain: "Firewall updated successfully: #{@allowed_ips_output}", status: :ok
     else
       # Handle inactive status logic here
-      render json: { message: 'Status is inactive' }, status: :ok
+      render plain: "Failed to update firewall", status: :unprocessable_entity
     end
   end
 
