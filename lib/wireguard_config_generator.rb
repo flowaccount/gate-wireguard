@@ -85,9 +85,9 @@ class WireguardConfigGenerator
       peer_config += "[Peer]\n"
       peer_config += "PublicKey = #{client.public_key}\n"
       peer_config += "AllowedIPs = #{client.ip_allocation.ip_address}/32\n"
-      vpn_configuration.network_addresses.each do |ip_address|
-        peer_config += "AllowedIPs = #{ip_address.network_address}\n"
-      end
+      #vpn_configuration.network_addresses.each do |ip_address|
+       # peer_config += "AllowedIPs = #{ip_address.network_address}\n"
+      #end
       peer_config += "# Optionally, add a PersistentKeepalive for NAT traversal\n"
       peer_config += "PersistentKeepalive = 25\n" if vpn_configuration.wg_keep_alive.present?
       peer_config += "\n\n"
