@@ -6,7 +6,7 @@
     <%= form_with model: vpn_device do |form| %>
       <div class="row">
         <div class="col-md-3">
-          <%= form.text_field :description, id: "description", class: "form-control", placeholder: "Device Description" %>
+          <%= form.text_field :description, id: "description", class: "form-control", placeholder: "Device Description" , required: true %>
         </div>
 
         <div class="col-md-3">
