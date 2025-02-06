@@ -13,7 +13,7 @@ class WireguardConfigGenerator
         range: '10.42.5.0', # This is the default range for WireGuard
         interface_name: 'wg0', # This is the default interface name for WireGuard
         keep_alive: '25', # This is the default keep alive for WireGuard
-        forward_interface: 'ens5' # This is the default forward interface for WireGuard
+        forward_interface: 'eth0' # This is the default forward interface for WireGuard
       }
     end
 
@@ -36,7 +36,7 @@ class WireguardConfigGenerator
         config += "AllowedIPs = #{ip_address.network_address}\n"
       end
       #PersistentKeepalive 40second
-      config += "PersistentKeepalive = 40\n" if vpn_configuration.wg_keep_alive.present?
+      #config += "PersistentKeepalive = 40\n" if vpn_configuration.wg_keep_alive.present?
       config += "\n"
 
       config
