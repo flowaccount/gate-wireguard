@@ -13,7 +13,7 @@ class WireguardConfigGenerator
         range: '10.42.5.0', # This is the default range for WireGuard
         interface_name: 'wg0', # This is the default interface name for WireGuard
         keep_alive: '25', # This is the default keep alive for WireGuard
-        forward_interface: 'eth0' # This is the default forward interface for WireGuard
+        forward_interface: 'ens5' # This is the default forward interface for WireGuard
       }
     end
 
@@ -30,12 +30,13 @@ class WireguardConfigGenerator
       config += "[Peer]\n"
       config += "PublicKey = #{vpn_configuration.wg_public_key}\n"
       config += "Endpoint = #{vpn_configuration.wg_ip_address}:#{vpn_configuration.wg_port}\n"
-      config += "AllowedIPs = 0.0.0.0/0\n"
-      #config += "AllowedIPs = #{vpn_configuration.server_vpn_ip_address}/32\n"
-      #vpn_configuration.network_addresses.each do |ip_address|
-      #  config += "AllowedIPs = #{ip_address.network_address}\n"
-      #end
-      # config += "PersistentKeepalive = 25\n" if vpn_configuration.wg_keep_alive.present?
+      #config += "AllowedIPs = 0.0.0.0/0\n"
+      config += "AllowedIPs = #{vpn_configuration.server_vpn_ip_address}/32\n"
+      vpn_configuration.network_addresses.each do |ip_address|
+        config += "AllowedIPs = #{ip_address.network_address}\n"
+      end
+      #PersistentKeepalive 40second
+      config += "PersistentKeepalive = 40\n" if vpn_configuration.wg_keep_alive.present?
       config += "\n"
 
       config
@@ -67,7 +68,7 @@ class WireguardConfigGenerator
       config = "[Interface]\n"
       config += "PrivateKey = #{vpn_configuration.wg_private_key}\n"
       config += "ListenPort = #{vpn_configuration.wg_port}\n"
-      config += "MTU = 1380\n"
+      config += "MTU = 1420\n"
       config += "SaveConfig = true\n"
       config += "Address = #{vpn_configuration.server_vpn_ip_address}/24 \n\n"
 
