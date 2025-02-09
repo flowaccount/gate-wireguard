@@ -70,6 +70,7 @@ cat << EOF | sudo tee /etc/wireguard/client.conf
 [Interface]
 PrivateKey = ${CLIENT_PRIVATE_KEY}
 Address = 10.45.5.2/32
+DNS = 172.10.0.2
 
 [Peer]
 PublicKey = ${SERVER_PUBLIC_KEY}
