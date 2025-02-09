@@ -40,6 +40,7 @@ cat << EOF | sudo tee /etc/wireguard/wg0.conf
 [Interface]
 PrivateKey = ${SERVER_PRIVATE_KEY}
 Address = 10.45.5.1/24
+DNS = 172.10.0.2
 ListenPort = 51820
 PostUp = iptables -t nat -I POSTROUTING -o ens5 -j MASQUERADE
 PostUp = ip6tables -t nat -I POSTROUTING -o ens5 -j MASQUERADE
