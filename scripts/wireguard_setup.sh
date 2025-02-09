@@ -74,7 +74,7 @@ DNS = 172.10.0.2
 [Peer]
 PublicKey = ${SERVER_PUBLIC_KEY}
 # Or use IPV4 address if your client doesn't support IPv6
-Endpoint = [$SERVER_IPV6]:51820
+Endpoint = 54.254.78.116:51820
 AllowedIPs = 0.0.0.0/0, ::/0
 PersistentKeepalive = 25
 EOF
