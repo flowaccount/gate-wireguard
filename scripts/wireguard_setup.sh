@@ -9,15 +9,15 @@
 #!/bin/bash
 
 # Install WireGuard
-sudo apt update
-sudo apt install -y wireguard qrencode
+#sudo apt update
+#sudo apt install -y wireguard qrencode
 
 # Enable IPv4 forwarding
-echo "net.ipv4.ip_forward = 1" | sudo tee -a /etc/sysctl.conf
+#echo "net.ipv4.ip_forward = 1" | sudo tee -a /etc/sysctl.conf
 
 # Enable IPv6 forwarding
-echo "net.ipv6.conf.all.forwarding = 1" | sudo tee -a /etc/sysctl.conf
-sudo sysctl -p
+#echo "net.ipv6.conf.all.forwarding = 1" | sudo tee -a /etc/sysctl.conf
+#sudo sysctl -p
 
 # Generate Client And Server Keys
 sudo mkdir -p /etc/wireguard
@@ -39,7 +39,7 @@ CLIENT_PUBLIC_KEY=$(sudo cat /etc/wireguard/client_public.key)
 cat << EOF | sudo tee /etc/wireguard/wg0.conf
 [Interface]
 PrivateKey = ${SERVER_PRIVATE_KEY}
-Address = 10.45.5.1/24, fd00:1234:5678:9abc::1/64
+Address = 10.45.5.1/24
 ListenPort = 51820
 PostUp = iptables -t nat -I POSTROUTING -o ens5 -j MASQUERADE
 PostUp = ip6tables -t nat -I POSTROUTING -o ens5 -j MASQUERADE
@@ -48,7 +48,7 @@ PostDown = ip6tables -t nat -D POSTROUTING -o ens5 -j MASQUERADE
 
 [Peer]
 PublicKey = ${CLIENT_PUBLIC_KEY}
-AllowedIPs = 10.45.5.2/32, fd00:1234:5678:9abc::2/64
+AllowedIPs = 10.45.5.2/32
 EOF
 
 # Start WireGuard
@@ -68,7 +68,7 @@ SERVER_IPV6=$(ip -6 addr show dev ens5 | grep -oP '(?<=inet6 )([0-9a-f:]+)' | he
 cat << EOF | sudo tee /etc/wireguard/client.conf
 [Interface]
 PrivateKey = ${CLIENT_PRIVATE_KEY}
-Address = 10.45.5.2/32, fd00:1234:5678:9abc::2/64
+Address = 10.45.5.2/32
 DNS = 172.10.0.2
 
 [Peer]
