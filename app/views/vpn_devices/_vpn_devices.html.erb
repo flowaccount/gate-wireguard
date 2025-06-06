@@ -36,7 +36,7 @@
 <% end %>
 
 <% if @current_user.admin %>
-  <%= form_with url: add_with_user, method: :post, local: true do |form| %>
+  <%= form_with url: add_with_user_path, method: :post, local: true do |form| %>
     <div>
       <%= form.label :userId %>
       <%= form.text_field :userId %>
