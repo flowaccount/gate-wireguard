@@ -6,7 +6,7 @@ class IpAllocation < ApplicationRecord
   def self.next_available_ip
     # Start checking from .2 as .1 is reserved for the server
     #(2..254).each do |i|
-    (100..254).each do |i|
+    (140..254).each do |i|
       ip = "#{get_base_ip}.#{i}"
       return ip unless IpAllocation.exists?(ip_address: ip)
     end
