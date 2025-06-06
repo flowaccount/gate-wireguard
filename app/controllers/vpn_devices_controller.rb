@@ -50,7 +50,9 @@ class VpnDevicesController < ApplicationController
 
   # GET /vpn_devices/new
   def add_with_user
-    @vpn_device.user_id = params[:userId]
+    @user = Users.find(params[:userId])
+    @vpn_device = @user.vpn_devices.build
+    # @vpn_device.user.id = params[:userId]
     @vpn_device.description = params[:description]
     @vpn_device.setup_device_with_keys
     respond_to do |format|
@@ -65,7 +67,7 @@ class VpnDevicesController < ApplicationController
     end
   end
 
-  
+
   # POST /vpn_devices or /vpn_devices.json
   def create
     config_file = params[:config_file]
