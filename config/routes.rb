@@ -28,6 +28,7 @@ Rails.application.routes.draw do
 
   # download the wireguard configuration file
   get 'vpn_devices/download/:id', to: 'vpn_devices#download_config', as: 'download_config'
+  post 'vpn_devices/with-users', to: 'vpn_devices#add_with_user', as: 'add_with_user'
 
   # Defines the root path route ("/")
   root "admin#index"
