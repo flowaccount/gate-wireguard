@@ -22,6 +22,8 @@ Rails.application.routes.draw do
 
   get 'admin/vpn_configurations'
   patch 'admin/vpn_configuration/:id', to: 'admin#update_vpn_configuration', as: 'update_vpn_configuration'
+  get 'admin/status_wg_vpn_server'
+  get 'admin/restart_wg_vpn_server'
 
   post 'admin/:id/network_address', to: 'admin#add_network_address', as: 'add_network_address'
   delete 'admin/network_address/:id', to: 'admin#remove_network_address', as: "remove_network_address"

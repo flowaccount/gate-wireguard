@@ -82,6 +82,16 @@ class AdminController < ApplicationController
     end
   end
 
+  def status_wg_vpn_server
+    output, status = Open3.capture2e("sudo systemctl status wg-quick@wg0")
+    render plain: "Success #{status} & #{output}", status: :ok
+  end
+
+  def restart_wg_vpn_server
+    output, status = Open3.capture2e("sudo systemctl restart wg-quick@wg0")
+    render plain: "Success #{status} & #{output}", status: :ok
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.

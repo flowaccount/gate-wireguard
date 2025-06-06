@@ -50,8 +50,24 @@
 <% end %>
 
   <% if @current_user.admin %>
-    <%= link_to "Add a VPN Device",
+    <%= link_to "Add a VPN For YourDevice",
     new_vpn_device_path,
+    data: {
+      turbo: false,
+    },
+    class: "btn btn-primary btn-sm" %>
+  <% end %>
+
+  <% if @current_user.admin %>
+    <%= link_to "Status Server VPN",
+    status_wg_vpn_server_path,
+    data: {
+      turbo: false,
+    },
+    class: "btn btn-primary btn-sm" %>
+
+    <%= link_to "Restart Server VPN",
+    restart_wg_vpn_server_path,
     data: {
       turbo: false,
     },
