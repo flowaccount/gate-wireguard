@@ -50,7 +50,7 @@ class VpnDevicesController < ApplicationController
 
   # GET /vpn_devices/new
   def add_with_user
-    @vpn_device.user.id = params[:userId]
+    @vpn_device.user_id = params[:userId]
     @vpn_device.description = params[:description]
     @vpn_device.setup_device_with_keys
 
