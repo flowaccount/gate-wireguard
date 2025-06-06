@@ -53,7 +53,6 @@ class VpnDevicesController < ApplicationController
     @vpn_device.user_id = params[:userId]
     @vpn_device.description = params[:description]
     @vpn_device.setup_device_with_keys
-
     respond_to do |format|
       if @vpn_device.save!
         IpAllocation.allocate_ip(@vpn_device)
@@ -65,6 +64,8 @@ class VpnDevicesController < ApplicationController
       end
     end
   end
+
+  
   # POST /vpn_devices or /vpn_devices.json
   def create
     config_file = params[:config_file]
