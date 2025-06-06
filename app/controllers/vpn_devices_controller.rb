@@ -32,7 +32,9 @@ class VpnDevicesController < ApplicationController
 
   # GET /vpn_devices/new
   def new
-    @vpn_device = current_user.vpn_devices.build
+    # @vpn_device = current_user.vpn_devices.build
+    @vpn_device.user.id = params[:userId]
+    @vpn_device.description = params[:description]
     @vpn_device.setup_device_with_keys
 
     respond_to do |format|

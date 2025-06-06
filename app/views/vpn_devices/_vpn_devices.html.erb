@@ -36,13 +36,27 @@
 <% end %>
 
 <% if @current_user.admin %>
-  <%= link_to "Add a VPN Device",
-  new_vpn_device_path,
-  data: {
-    turbo: false,
-  },
-  class: "btn btn-primary btn-sm" %>
+  <%= form_with url: new_vpn_device_path, method: :get, local: true do |form| %>
+    <div>
+      <%= form.label :userId %>
+      <%= form.text_field :userId %>
+    </div>
+    <div>
+      <%= form.label :description %>
+      <%= form.text_field :description %>
+    </div>
+    <%= form.submit "Add New Devices With Users" %>
+  <% end %>
 <% end %>
+
+  <% if @current_user.admin %>
+    <%= link_to "Add a VPN Device",
+    new_vpn_device_path,
+    data: {
+      turbo: false,
+    },
+    class: "btn btn-primary btn-sm" %>
+  <% end %>
 <br>
 <br>
 
