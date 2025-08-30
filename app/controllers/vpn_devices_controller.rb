@@ -32,7 +32,7 @@ class VpnDevicesController < ApplicationController
 
   # GET /vpn_devices/new
   def new
-    @vpn_device = current_user.vpn_devices.build
+    @vpn_device = params[:id]
     @vpn_device.setup_device_with_keys
 
     respond_to do |format|
@@ -50,8 +50,7 @@ class VpnDevicesController < ApplicationController
   # POST /vpn_devices or /vpn_devices.json
   def create
     config_file = params[:config_file]
-    output, status = Open3.capture2e("sudo wg-quick up #{config_file}")
-
+    output, status = Open3.capture2e("sudo wg-quick up #{config_file}")   
     if status.success?
       redirect_to vpn_devices_path, notice: 'WireGuard interface created successfully.'
     else

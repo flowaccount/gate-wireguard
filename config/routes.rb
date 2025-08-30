@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resources :configurations
   resources :vpn_devices
+  resources :firewalls
   get 'dns_records/refresh', to: 'dns_records#refresh_zones', as: 'refresh_dns_records'
   resources :dns_records
   get 'home/index'
@@ -12,8 +13,13 @@ Rails.application.routes.draw do
   get 'auth/:provider/callback', to: 'sessions#create'
   get 'auth/failure', to: redirect('/')
   get 'logout', to: 'sessions#destroy', as: 'logout'
-
   get 'admin/users'
+  #get 'firewall' , to: 'firewall#index'
+  post 'firewalls', to: 'firewalls#create', as: 'firewall_create'
+  patch 'firewalls', to: 'firewalls#update_display_rules', as: 'update_display_rules'
+
+  patch 'admin/user/:id', to: 'admin#update_users_admin', as: 'update_users_admin'
+
   get 'admin/vpn_configurations'
   patch 'admin/vpn_configuration/:id', to: 'admin#update_vpn_configuration', as: 'update_vpn_configuration'
 

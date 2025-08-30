@@ -32,8 +32,6 @@
       vars:
         server_private_key: "{{ server_private_key.stdout }}"
         server_public_ip: "{{ ansible_host }}"
-        docker_subnet: "172.17.0.0/16"
-        incus_subnet: "10.34.129.0/24"
 
     - name: Enable and start WireGuard interface
       systemd:

@@ -1,0 +1,32 @@
+<h2>Rules Access</h2>
+
+<%= turbo_frame_tag "status_display" do %>
+  <span>Select Name List:
+    <%= form_with url: update_display_rules_path, method: :patch, remote: false do %>
+      <%= select_tag :rules_name, options_for_select(["allowed_remotes", "allowed_remotes_crm"], selected: nil),{ onchange: "this.form.submit();", prompt: "Please select rule name" } %>
+    <% end %>
+  </span>
+
+  <br/>
+  <span>Rules Name: <%= raw @rule_name%></span>
+  <br/>
+  <span>Allowed IPs: <%= raw @allowed_ips_output%></span>
+<% end %>
+
+<br/><br/>
+
+<%= form_for @firewall , method: :post do |f|  %>
+    <div>
+      <%= f.label :name, "Name Rule" %>
+      <%= f.text_field :name  %>
+    </div>
+    <br/>
+    <div>
+      <%= f.label :ipAddress, "IP Allow" %>
+      <%= f.text_field :ipAddress %>
+    </div>
+    <br/>
+    <div>
+      <%= f.submit "Submit", class: "btn btn-primary" %>
+    </div>
+  <% end %>

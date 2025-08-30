@@ -7,5 +7,5 @@ PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACC
 
 [Peer]
 PublicKey = <client_public_key>
-AllowedIPs = 0.0.0.0/0, {{ docker_subnet }}
+AllowedIPs = 0.0.0.0/0
 Endpoint = {{ server_public_ip }}:51820

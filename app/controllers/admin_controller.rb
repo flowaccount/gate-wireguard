@@ -20,10 +20,20 @@ class AdminController < ApplicationController
     end
   end
 
+  def update_users_admin
+    if current_user.admin?
+      @user = User.find(params[:id])
+      @user.admin = !@user.admin
+      @user.save!
+    else
+      redirect_to root_path, alert: 'You are not authorized to access this page.'
+    end
+  end
+
   def vpn_configurations
     if current_user.admin?
       @vpn_configuration = VpnConfiguration.get_vpn_configuration
-
+      @all_vpn_configuration = VpnConfiguration.all
     else
       redirect_to root_path, alert: 'You are not authorized to access this page.'
     end

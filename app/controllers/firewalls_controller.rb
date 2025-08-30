@@ -1,0 +1,89 @@
+
+
+class FirewallsController < ApplicationController
+  before_action :require_login
+  # before_action :get_iptables_rules, only: %i[show edit update destroy]
+  # before_action :set_vpn_configuration, only: %i[ show update edit ]
+  layout 'admin'
+
+  def index
+    @firewall = Firewall.new
+  end
+
+  def rules
+    @iptables_output = get_iptables_rules
+  end
+
+  def new
+    @firewall = Firewall.new
+  end
+
+  # Handle form submission
+  def create
+    @firewall = Firewall.new(firewall_params)
+    #@firewall.name = @rule_name
+    if @firewall.name.blank? || @firewall.name.nil? || @firewall.ipAddress.nil?
+      render json: @firewall, status: :ok
+    else
+      name = @firewall.name
+      ip = @firewall.ipAddress
+      command = "sudo ipset add #{name} #{ip}"
+      output, status = Open3.capture2e(command)
+     
+      if status.success?
+        Open3.capture2e("sudo iptables-save > /etc/iptables/rules.v4")
+        Open3.capture2e("sudo systemctl restart iptables")
+        flash[:notice] = "Add Allowed IP Address: #{@firewall.name}"
+        render plain: "Success Add Allowed IP", status: :ok
+      else
+        render :index, alert: "Failed to create WireGuard interface:\n#{output}"
+      end
+    end
+  end
+
+  def update_display_rules
+    rules_name = params[:rules_name]
+    
+    if rules_name
+      @allowed_ips_output = get_allowed_ip_addresses(rules_name)
+      @firewall = Firewall.new
+      @firewall.name = rules_name
+      @rule_name = rules_name
+      # Handle active status logic here
+      render :index
+    else
+      # Handle inactive status logic here
+      render plain: "Failed to update firewall", status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def firewall_params
+    params.require(:firewall).permit(:name, :ipAddress)
+  end
+
+  def get_allowed_ip_addresses(name)
+    command = "sudo ipset list #{name} | awk 'NR > 7 { print $1 }'"
+    
+    output, status = Open3.capture2e(command)
+    
+    if status.success?
+      output # Return iptables output
+    else
+      "Error fetching iptables rules: #{stderr}" # Handle errors
+    end
+  end
+
+  def get_iptables_rules
+    command = "sudo iptables -L -n -v --line-number"
+    
+    output, status = Open3.capture2e(command)
+    
+    if status.success?
+      output # Return iptables output
+    else
+      "Error fetching iptables rules: #{stderr}" # Handle errors
+    end
+  end
+end
