@@ -10,6 +10,14 @@
   <div style="color: red">You will be required to re-configure all client devices on update, please be careful,
     don't do it if you don't understand
   </div>
+
+  <% @all_vpn_configuration.each do |config| %>
+    <tr>
+      <td><%= config.wg_ip_address %></td>
+      <td><%= config.wg_interface_name %></td>
+    </tr>
+  <% end %>
+
   <hr>
 
   <%= form_with model: @vpn_configuration, url: update_vpn_configuration_path(@vpn_configuration), local: true, html: { class: "form-horizontal" } do |form| %>

@@ -40,9 +40,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_05_090543) do
     t.string "uid"
     t.string "email"
     t.string "name"
+    t.string "role"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "admin"
+    t.boolean "isDeleted", default: false
   end
 
   create_table "vpn_configurations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|

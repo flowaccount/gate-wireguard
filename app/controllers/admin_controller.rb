@@ -20,10 +20,20 @@ class AdminController < ApplicationController
     end
   end
 
+  def update_users_admin
+    if current_user.admin?
+      @user = User.find(params[:id])
+      @user.admin = !@user.admin
+      @user.save!
+    else
+      redirect_to root_path, alert: 'You are not authorized to access this page.'
+    end
+  end
+
   def vpn_configurations
     if current_user.admin?
       @vpn_configuration = VpnConfiguration.get_vpn_configuration
-
+      @all_vpn_configuration = VpnConfiguration.all
     else
       redirect_to root_path, alert: 'You are not authorized to access this page.'
     end
@@ -70,6 +80,16 @@ class AdminController < ApplicationController
       format.html { redirect_to '/admin/vpn_configurations', notice: 'Network address was deleted' }
       format.json { head :no_content }
     end
+  end
+
+  def status_wg_vpn_server
+    output, status = Open3.capture2e("sudo systemctl status wg-quick@wg0")
+    render plain: "Success #{status} & #{output}", status: :ok
+  end
+
+  def restart_wg_vpn_server
+    output, status = Open3.capture2e("sudo systemctl restart wg-quick@wg0")
+    render plain: "Success #{status} & #{output}", status: :ok
   end
 
   private

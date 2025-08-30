@@ -47,11 +47,31 @@ class VpnDevicesController < ApplicationController
     end
   end
 
+
+  # GET /vpn_devices/new
+  def add_with_user
+    @user = User.find(params[:userId])
+    @vpn_device = @user.vpn_devices.build
+    # @vpn_device.user.id = params[:userId]
+    @vpn_device.description = params[:description]
+    @vpn_device.setup_device_with_keys
+    respond_to do |format|
+      if @vpn_device.save!
+        IpAllocation.allocate_ip(@vpn_device)
+        format.html { redirect_to root_path, notice: 'Vpn device was successfully updated.' }
+        format.json { render :show, status: :ok, location: @vpn_device }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @vpn_device.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+
   # POST /vpn_devices or /vpn_devices.json
   def create
     config_file = params[:config_file]
-    output, status = Open3.capture2e("sudo wg-quick up #{config_file}")
-
+    output, status = Open3.capture2e("sudo wg-quick up #{config_file}")   
     if status.success?
       redirect_to vpn_devices_path, notice: 'WireGuard interface created successfully.'
     else

@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resources :configurations
   resources :vpn_devices
+  resources :firewalls
   get 'dns_records/refresh', to: 'dns_records#refresh_zones', as: 'refresh_dns_records'
   resources :dns_records
   get 'home/index'
@@ -12,16 +13,24 @@ Rails.application.routes.draw do
   get 'auth/:provider/callback', to: 'sessions#create'
   get 'auth/failure', to: redirect('/')
   get 'logout', to: 'sessions#destroy', as: 'logout'
-
   get 'admin/users'
+  #get 'firewall' , to: 'firewall#index'
+  post 'firewalls', to: 'firewalls#create', as: 'firewall_create'
+  patch 'firewalls', to: 'firewalls#update_display_rules', as: 'update_display_rules'
+
+  patch 'admin/user/:id', to: 'admin#update_users_admin', as: 'update_users_admin'
+
   get 'admin/vpn_configurations'
   patch 'admin/vpn_configuration/:id', to: 'admin#update_vpn_configuration', as: 'update_vpn_configuration'
+  get 'admin/status_wg_vpn_server', to: 'admin#status_wg_vpn_server', as: 'status_wg_vpn_server'
+  get 'admin/restart_wg_vpn_server', to: 'admin#restart_wg_vpn_server', as: 'restart_wg_vpn_server'
 
   post 'admin/:id/network_address', to: 'admin#add_network_address', as: 'add_network_address'
   delete 'admin/network_address/:id', to: 'admin#remove_network_address', as: "remove_network_address"
 
   # download the wireguard configuration file
   get 'vpn_devices/download/:id', to: 'vpn_devices#download_config', as: 'download_config'
+  post 'vpn_devices/with-users', to: 'vpn_devices#add_with_user', as: 'add_with_user'
 
   # Defines the root path route ("/")
   root "admin#index"

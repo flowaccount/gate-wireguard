@@ -6,7 +6,7 @@
     <%= form_with model: vpn_device do |form| %>
       <div class="row">
         <div class="col-md-3">
-          <%= form.text_field :description, id: "description", class: "form-control", placeholder: "Device Description" %>
+          <%= form.text_field :description, id: "description", class: "form-control", placeholder: "Device Description" , required: true %>
         </div>
 
         <div class="col-md-3">
@@ -31,12 +31,48 @@
         </div>
       </div>
     <% end %>
+    <br/>
   <% end %>
 <% end %>
 
-<% if vpn_devices_require_updates.count == 0 %>
-  <%= link_to 'Add a VPN Device', new_vpn_device_path, class: 'btn btn-primary btn-sm' %>
+<% if @current_user.admin %>
+  <%= form_with url: add_with_user_path, method: :post, local: true do |form| %>
+    <div>
+      <%= form.label :userId %>
+      <%= form.text_field :userId %>
+    </div>
+    <div>
+      <%= form.label :description %>
+      <%= form.text_field :description %>
+    </div>
+    <%= form.submit "Add New Devices With Users" %>
+  <% end %>
 <% end %>
+
+  <% if @current_user.admin %>
+    <%= link_to "Add a VPN For YourDevice",
+    new_vpn_device_path,
+    data: {
+      turbo: false,
+    },
+    class: "btn btn-primary btn-sm" %>
+  <% end %>
+
+  <% if @current_user.admin %>
+    <%= link_to "Status Server VPN",
+    status_wg_vpn_server_path,
+    data: {
+      turbo: false,
+    },
+    class: "btn btn-primary btn-sm" %>
+
+    <%= link_to "Restart Server VPN",
+    restart_wg_vpn_server_path,
+    data: {
+      turbo: false,
+    },
+    class: "btn btn-primary btn-sm" %>
+  <% end %>
 <br>
 <br>
 
@@ -93,15 +129,7 @@
                 <h6 class="card-title"> <%= vpn_device.ip_allocation.ip_address %></h6>
               </div>
             </div>
-            <div class="row">
-              <div class="col-sm-4">
-                <h6 class="card-title">Accessible remote networks</h6>
-              </div>
-              <div class="col-sm-8">
-                <td></td>
-                <h6 class="card-title"> <%= @vpn_configuration.network_addresses.map(&:network_address).join(", ") %></h6>
-              </div>
-            </div>
+        
             <br/>
 
             <%= link_to 'Download Configuration', download_config_path(vpn_device.id), class: 'btn btn-primary btn-sm' %>

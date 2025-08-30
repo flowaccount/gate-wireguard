@@ -30,11 +30,13 @@ class WireguardConfigGenerator
       config += "[Peer]\n"
       config += "PublicKey = #{vpn_configuration.wg_public_key}\n"
       config += "Endpoint = #{vpn_configuration.wg_ip_address}:#{vpn_configuration.wg_port}\n"
+      #config += "AllowedIPs = 0.0.0.0/0\n"
       config += "AllowedIPs = #{vpn_configuration.server_vpn_ip_address}/32\n"
       vpn_configuration.network_addresses.each do |ip_address|
         config += "AllowedIPs = #{ip_address.network_address}\n"
       end
-      # config += "PersistentKeepalive = 25\n" if vpn_configuration.wg_keep_alive.present?
+      #PersistentKeepalive 40second
+      #config += "PersistentKeepalive = 40\n" if vpn_configuration.wg_keep_alive.present?
       config += "\n"
 
       config
@@ -82,6 +84,9 @@ class WireguardConfigGenerator
       peer_config += "[Peer]\n"
       peer_config += "PublicKey = #{client.public_key}\n"
       peer_config += "AllowedIPs = #{client.ip_allocation.ip_address}/32\n"
+      #vpn_configuration.network_addresses.each do |ip_address|
+       # peer_config += "AllowedIPs = #{ip_address.network_address}\n"
+      #end
       peer_config += "# Optionally, add a PersistentKeepalive for NAT traversal\n"
       peer_config += "PersistentKeepalive = 25\n" if vpn_configuration.wg_keep_alive.present?
       peer_config += "\n\n"
