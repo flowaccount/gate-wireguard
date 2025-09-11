@@ -1,4 +1,6 @@
 class VpnDevicesController < ApplicationController
+  # Only allow these WireGuard interfaces to be managed by this controller
+  ALLOWED_WG_INTERFACES = %w[wg0 wg1]
   before_action :set_vpn_device, only: %i[show edit update destroy]
   before_action :require_login
   after_action :update_wireguard_config, only: %i[update destroy]
@@ -53,6 +55,10 @@ class VpnDevicesController < ApplicationController
     # Accept only a valid WireGuard interface name (alphanumeric, underscores)
     unless config_file.is_a?(String) && config_file.match?(/\A[\w\-]+\z/)
       redirect_to new_vpn_device_path, alert: "Invalid WireGuard config file/interface name."
+      return
+    end
+    unless ALLOWED_WG_INTERFACES.include?(config_file)
+      redirect_to new_vpn_device_path, alert: "WireGuard interface not allowed."
       return
     end
     output, status = Open3.capture2e(['sudo', 'wg-quick', 'up', config_file])
