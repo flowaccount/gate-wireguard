@@ -34,9 +34,28 @@ namespace :wireguard do
       puts "  id=#{d.id}  ip=#{d.ip_allocation&.ip_address}  user=#{d.user&.name.inspect}  device=#{d.description.inspect}  created=#{d.created_at}"
     end
 
+    # Peers in the conf but not in the DB. These will be removed from the
+    # conf (and the running kernel via `wg syncconf`) on the next regen.
+    # If any of them are real users, re-create their device via the Rails
+    # UI BEFORE running `rake wireguard:fix` — otherwise they'll lose
+    # connectivity.
     ghosts = conf_ips - db_ips - Set[cfg.server_vpn_ip_address.to_s]
-    puts "\n== Peers in conf but missing from DB (ghosts, IP-collision risk): #{ghosts.size} =="
-    ghosts.sort.each { |ip| puts "  #{ip}" }
+    puts "\n== Peers in conf but missing from DB (will be cleaned up on next regen): #{ghosts.size} =="
+    if ghosts.any?
+      puts "   ⚠  Review each one before running `rake wireguard:fix`."
+      puts "      If a peer here represents a real user, re-add their device via the UI first."
+    end
+    ghosts.sort.each do |ip|
+      # Try to find the "# User: ..." comment line that precedes this peer in the conf,
+      # so the operator knows who the orphan was.
+      comment = nil
+      if File.readable?(conf_path)
+        File.read(conf_path).lines.each_cons(3) do |a, _, c|
+          comment = a.strip if c.include?("AllowedIPs = #{ip}/32") && a.start_with?('#')
+        end
+      end
+      puts "  #{ip}   #{comment}"
+    end
 
     kernel_drift = running_ips ^ conf_ips
     puts "\n== Running-interface vs conf drift: #{kernel_drift.size} =="

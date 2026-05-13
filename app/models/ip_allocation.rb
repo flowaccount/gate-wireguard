@@ -3,10 +3,20 @@ class IpAllocation < ApplicationRecord
   validates :ip_address, presence: true, uniqueness: true
   belongs_to :vpn_device
 
-  # Production-chosen allocation range. Octets .2 - .139 are intentionally
-  # excluded (reserved for manual / pre-existing allocations — change in
-  # https://github.com/flowaccount/gate-wireguard branch feat/vpn_interface).
-  ALLOCATION_RANGE = (140..254).freeze
+  # Full /24 host range (.1 is the WG server itself).
+  #
+  # History: this range was previously narrowed to (140..254) as a workaround
+  # because deletes weren't propagating from the Rails DB to the running
+  # WireGuard kernel — the conf file got rewritten but the kernel was never
+  # told to drop the peer. That left "phantom" peers in the kernel and
+  # forced new allocations into the .140-.254 range to avoid IP collision
+  # when the same IP got reassigned to a new user.
+  #
+  # Fixed by adding `WireguardConfigGenerator.reload_wireguard` (wg syncconf)
+  # to the destroy after_action — the kernel now reliably reconciles with
+  # the conf on every change. With reliable delete propagation, the full
+  # range is safe to reopen.
+  ALLOCATION_RANGE = (2..254).freeze
 
   # Number of times to retry allocation when another transaction races us to
   # the same IP and the DB-level unique index rejects our insert. The DB
