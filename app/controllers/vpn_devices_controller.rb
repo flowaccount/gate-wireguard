@@ -1,7 +1,13 @@
 class VpnDevicesController < ApplicationController
   before_action :set_vpn_device, only: %i[show edit update destroy]
   before_action :require_login
-  after_action :update_wireguard_config, only: %i[update destroy]
+  # NOTE: `:new` and `:add_with_user` are both actions that PERSIST a VpnDevice
+  # (this controller has a non-standard pattern where GET `#new` and POST-style
+  # `#add_with_user` both save records). They MUST be in the after_action list,
+  # otherwise newly registered peers never make it into wg0.conf — which is
+  # why the service has been needing manual `systemctl restart wg-quick@wg0`
+  # every time a user signed up.
+  after_action :update_wireguard_config, only: %i[new add_with_user update destroy]
   layout 'admin'
 
   # GET /vpn_devices or /vpn_devices.json
@@ -31,37 +37,41 @@ class VpnDevicesController < ApplicationController
   end
 
   # GET /vpn_devices/new
+  #
+  # NOTE: yes, this is a GET that persists a record — preserved for compatibility
+  # with the existing client flow. IP allocation now happens in VpnDevice's
+  # `after_create` callback inside the same transaction as `save`, so we no
+  # longer have the race where a device could persist without an IP allocation
+  # (which would later crash config regeneration on `nil.ip_address`).
   def new
     @vpn_device = current_user.vpn_devices.build
     @vpn_device.setup_device_with_keys
 
     respond_to do |format|
-      if @vpn_device.save!
-        IpAllocation.allocate_ip(@vpn_device)
-        format.html { redirect_to root_path, notice: 'Vpn device was successfully updated.' }
+      if @vpn_device.save
+        format.html { redirect_to root_path, notice: 'Vpn device was successfully created.' }
         format.json { render :show, status: :ok, location: @vpn_device }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { redirect_to root_path, alert: "Could not create device: #{@vpn_device.errors.full_messages.to_sentence}" }
         format.json { render json: @vpn_device.errors, status: :unprocessable_entity }
       end
     end
   end
 
 
-  # GET /vpn_devices/new
+  # Admin flow: create a VPN device on behalf of another user.
+  # IP allocation is handled in VpnDevice's after_create callback (transactional).
   def add_with_user
     @user = User.find(params[:userId])
     @vpn_device = @user.vpn_devices.build
-    # @vpn_device.user.id = params[:userId]
     @vpn_device.description = params[:description]
     @vpn_device.setup_device_with_keys
     respond_to do |format|
-      if @vpn_device.save!
-        IpAllocation.allocate_ip(@vpn_device)
-        format.html { redirect_to root_path, notice: 'Vpn device was successfully updated.' }
+      if @vpn_device.save
+        format.html { redirect_to root_path, notice: 'Vpn device was successfully created.' }
         format.json { render :show, status: :ok, location: @vpn_device }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { redirect_to root_path, alert: "Could not create device: #{@vpn_device.errors.full_messages.to_sentence}" }
         format.json { render json: @vpn_device.errors, status: :unprocessable_entity }
       end
     end
