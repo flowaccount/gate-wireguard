@@ -1,6 +1,10 @@
 require 'open3'
+require 'tempfile'
 # WireGuard config generator, this expects you to have wg utility installed on the same box for generating keys
 class WireguardConfigGenerator
+  # Only interface names that match this pattern are allowed to be passed to shell-outs.
+  SAFE_INTERFACE_NAME = /\A[A-Za-z0-9_-]{1,15}\z/.freeze
+
   class << self
     def generate_server_config # rubocop:disable Metrics/MethodLength
       keys = generate_keys
@@ -54,14 +58,61 @@ class WireguardConfigGenerator
     def write_server_configuration(vpn_configuration)
       config_dir = Rails.root.join('config', 'wireguard')
       FileUtils.mkdir_p(config_dir)
-      config_file = config_dir.join("#{vpn_configuration.wg_interface_name}.conf")
-      File.write(config_file, generate_config(vpn_configuration))
+      interface_name = vpn_configuration.wg_interface_name
+      config_file = config_dir.join("#{interface_name}.conf")
+      # Write atomically so the kernel (which reads via the
+      # /etc/wireguard/wg0.conf -> config/wireguard/wg0.conf symlink) never
+      # sees a half-written file.
+      tmp_path = "#{config_file}.tmp"
+      File.write(tmp_path, generate_config(vpn_configuration))
+      File.rename(tmp_path, config_file)
 
       private_key_file = config_dir.join('private.key')
       File.write(private_key_file, vpn_configuration.wg_private_key)
 
       public_key_file = config_dir.join('public.key')
       File.write(public_key_file, vpn_configuration.wg_public_key)
+
+      # Hot-reload the interface in-place. Unlike `systemctl restart wg-quick@wg0`
+      # (which deletes the link and drops every active session), `wg syncconf`
+      # reconciles peers atomically: new peers are added, removed peers are
+      # dropped, existing peers keep their handshake state.
+      reload_wireguard(interface_name)
+    end
+
+    # Hot-reloads the running WireGuard interface from /etc/wireguard/<iface>.conf
+    # without tearing down existing sessions.
+    #
+    # Equivalent to: `wg syncconf wg0 <(wg-quick strip wg0)`
+    # Returns true on success, false otherwise. Never raises — failure is logged
+    # so the caller (an after_action) can't break the HTTP response.
+    def reload_wireguard(interface_name)
+      unless interface_name.to_s.match?(SAFE_INTERFACE_NAME)
+        Rails.logger.error("[wg-reload] refusing to reload unsafe interface name: #{interface_name.inspect}")
+        return false
+      end
+
+      stripped, strip_status = Open3.capture2e('sudo', '-n', 'wg-quick', 'strip', interface_name)
+      unless strip_status.success?
+        Rails.logger.error("[wg-reload] wg-quick strip #{interface_name} failed: #{stripped}")
+        return false
+      end
+
+      Tempfile.create(["wg-#{interface_name}-", '.conf']) do |f|
+        f.write(stripped)
+        f.flush
+        File.chmod(0o600, f.path)
+        out, sync_status = Open3.capture2e('sudo', '-n', 'wg', 'syncconf', interface_name, f.path)
+        unless sync_status.success?
+          Rails.logger.error("[wg-reload] wg syncconf #{interface_name} failed: #{out}")
+          return false
+        end
+      end
+      Rails.logger.info("[wg-reload] #{interface_name} synced")
+      true
+    rescue StandardError => e
+      Rails.logger.error("[wg-reload] unexpected error: #{e.class}: #{e.message}")
+      false
     end
 
     def generate_config(vpn_configuration)

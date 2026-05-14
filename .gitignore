@@ -86,3 +86,14 @@ yarn-debug.log*
 /node_modules
 
 /config/credentials/production.key
+
+# Operational artifacts (iptables dumps, credential backups, claude-crew state).
+# These appear on production boxes during firewall / credentials work — never
+# meant for source control.
+*.rules
+rules.v*
+firewall.txt
+*.enc.backup
+*.backup
+.claude-crew*
+.fos/

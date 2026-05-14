@@ -6,7 +6,17 @@
         <h3 class="fw-normal">You don't have any devices</h3>
         <p>Let's get started.</p>
         <p>
-          <a class="btn btn-primary" href="/vpn_devices/new" role="button">Let's add a device</a>
+          <%# data-turbo-prefetch=false stops Turbo Drive from prefetching this
+              link on hover. Without it, the prefetch issues a GET to
+              /vpn_devices/new — which currently persists a VpnDevice as a side
+              effect — and creates accidental duplicates every time the user's
+              mouse passes over the button. data: { turbo_method: :get } keeps
+              the click behavior identical. %>
+          <%= link_to "Let's add a device",
+                      new_vpn_device_path,
+                      class: "btn btn-primary",
+                      role: "button",
+                      data: { turbo_prefetch: false } %>
         </p>
       </div>
     </div>

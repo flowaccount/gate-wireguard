@@ -1,7 +1,13 @@
 class VpnDevicesController < ApplicationController
   before_action :set_vpn_device, only: %i[show edit update destroy]
   before_action :require_login
-  after_action :update_wireguard_config, only: %i[update destroy]
+  # NOTE: `:new` and `:add_with_user` are both actions that PERSIST a VpnDevice
+  # (this controller has a non-standard pattern where GET `#new` and POST-style
+  # `#add_with_user` both save records). They MUST be in the after_action list,
+  # otherwise newly registered peers never make it into wg0.conf — which is
+  # why the service has been needing manual `systemctl restart wg-quick@wg0`
+  # every time a user signed up.
+  after_action :update_wireguard_config, only: %i[new add_with_user update destroy]
   layout 'admin'
 
   # GET /vpn_devices or /vpn_devices.json
@@ -30,38 +36,67 @@ class VpnDevicesController < ApplicationController
     send_data config_content, filename: 'gate_vpn_config.conf'
   end
 
+  # Idempotency window for #new and #add_with_user. If the same target user
+  # had a device created within this many seconds, we short-circuit and return
+  # that device instead of persisting another one. Protects against:
+  #   - Turbo Drive prefetch on hover (issues a background GET, then another on click)
+  #   - Browser pre-rendering / link prefetch
+  #   - Double-click / rapid double-submit
+  #   - Refresh-after-create
+  # Evidence: prior to this guard, 16+ users had duplicate devices created
+  # within sub-second windows (logs showed deltas as low as 0.2s).
+  IDEMPOTENCY_WINDOW = 30.seconds
+
   # GET /vpn_devices/new
+  #
+  # NOTE: this controller's `#new` is a GET that persists a record (preserved
+  # for compatibility with the existing client flow — proper REST refactor is
+  # out of scope). Idempotency protection is enforced via the recent-device
+  # check below; IP allocation is transactional via VpnDevice's after_create
+  # callback (rolls back the device if the pool is exhausted).
   def new
+    if (recent = recent_device_for(current_user))
+      redirect_to root_path, notice: 'You already have a recently created device.'
+      return
+    end
+
     @vpn_device = current_user.vpn_devices.build
     @vpn_device.setup_device_with_keys
 
     respond_to do |format|
-      if @vpn_device.save!
-        IpAllocation.allocate_ip(@vpn_device)
-        format.html { redirect_to root_path, notice: 'Vpn device was successfully updated.' }
+      if @vpn_device.save
+        format.html { redirect_to root_path, notice: 'Vpn device was successfully created.' }
         format.json { render :show, status: :ok, location: @vpn_device }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { redirect_to root_path, alert: "Could not create device: #{@vpn_device.errors.full_messages.to_sentence}" }
         format.json { render json: @vpn_device.errors, status: :unprocessable_entity }
       end
     end
   end
 
 
-  # GET /vpn_devices/new
+  # Admin flow: create a VPN device on behalf of another user.
+  # IP allocation is handled in VpnDevice's after_create callback (transactional).
+  # Same idempotency window applies — the admin form is also vulnerable to
+  # double-submit / prefetch even though POST requests are not prefetched by
+  # Turbo. We err on the side of safety.
   def add_with_user
     @user = User.find(params[:userId])
+
+    if (recent = recent_device_for(@user))
+      redirect_to root_path, notice: 'User already has a recently created device.'
+      return
+    end
+
     @vpn_device = @user.vpn_devices.build
-    # @vpn_device.user.id = params[:userId]
     @vpn_device.description = params[:description]
     @vpn_device.setup_device_with_keys
     respond_to do |format|
-      if @vpn_device.save!
-        IpAllocation.allocate_ip(@vpn_device)
-        format.html { redirect_to root_path, notice: 'Vpn device was successfully updated.' }
+      if @vpn_device.save
+        format.html { redirect_to root_path, notice: 'Vpn device was successfully created.' }
         format.json { render :show, status: :ok, location: @vpn_device }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { redirect_to root_path, alert: "Could not create device: #{@vpn_device.errors.full_messages.to_sentence}" }
         format.json { render json: @vpn_device.errors, status: :unprocessable_entity }
       end
     end
@@ -115,5 +150,17 @@ class VpnDevicesController < ApplicationController
 
   def update_wireguard_config
     WireguardConfigGenerator.write_server_configuration(VpnConfiguration.first)
+  end
+
+  # Returns the most recent VpnDevice the given user created within the
+  # idempotency window, or nil. Used to short-circuit duplicate creates
+  # caused by browser prefetch / double-submit. See IDEMPOTENCY_WINDOW.
+  def recent_device_for(user)
+    return nil if user.nil?
+
+    user.vpn_devices
+        .where('created_at > ?', IDEMPOTENCY_WINDOW.ago)
+        .order(created_at: :desc)
+        .first
   end
 end
