@@ -3,7 +3,13 @@
   <br/>
   <h6>Please add description to the followig device(s), devices with no description can't have configuration</h6>
   <% vpn_devices_require_updates.each do |vpn_device| %>
-    <%= form_with model: vpn_device do |form| %>
+    <%# local: true forces a standard HTML form submission (full page reload)
+        instead of a Turbo Stream submission. Without this, the response to
+        the PATCH (a `redirect_to root_path`) gets handled by Turbo Drive in
+        a way that leaves the stale "needs description" form visible until
+        the user manually refreshes. The matching add_with_user form below
+        already uses local: true for the same reason. %>
+    <%= form_with model: vpn_device, local: true do |form| %>
       <div class="row">
         <div class="col-md-3">
           <%= form.text_field :description, id: "description", class: "form-control", placeholder: "Device Description" , required: true %>
