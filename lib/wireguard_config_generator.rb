@@ -66,9 +66,15 @@ class WireguardConfigGenerator
       tmp_path = "#{config_file}.tmp"
       File.write(tmp_path, generate_config(vpn_configuration))
       File.rename(tmp_path, config_file)
+      # File.write creates the tmp file with default umask (typically 0644),
+      # which `wg-quick` warns about ("conf is world accessible"). Force
+      # 0600 so the warning never triggers and so the server private key
+      # is never group/other-readable.
+      File.chmod(0o600, config_file)
 
       private_key_file = config_dir.join('private.key')
       File.write(private_key_file, vpn_configuration.wg_private_key)
+      File.chmod(0o600, private_key_file)
 
       public_key_file = config_dir.join('public.key')
       File.write(public_key_file, vpn_configuration.wg_public_key)
@@ -92,9 +98,14 @@ class WireguardConfigGenerator
         return false
       end
 
-      stripped, strip_status = Open3.capture2e('sudo', '-n', 'wg-quick', 'strip', interface_name)
+      # Use `capture2` (stdout only), NOT `capture2e` — wg-quick writes
+      # informational warnings ("conf is world accessible", etc.) to stderr.
+      # If we capture stderr alongside stdout and pipe the combined output
+      # into `wg syncconf`, the warning text gets parsed as a config line
+      # and syncconf rejects the whole file with "Line unrecognized: `Warning:..."
+      stripped, strip_status = Open3.capture2('sudo', '-n', 'wg-quick', 'strip', interface_name)
       unless strip_status.success?
-        Rails.logger.error("[wg-reload] wg-quick strip #{interface_name} failed: #{stripped}")
+        Rails.logger.error("[wg-reload] wg-quick strip #{interface_name} failed (exit=#{strip_status.exitstatus})")
         return false
       end
 
@@ -102,6 +113,8 @@ class WireguardConfigGenerator
         f.write(stripped)
         f.flush
         File.chmod(0o600, f.path)
+        # capture2 here as well — kernel-side wg might emit informational
+        # warnings on stderr that we don't want to log as errors.
         out, sync_status = Open3.capture2e('sudo', '-n', 'wg', 'syncconf', interface_name, f.path)
         unless sync_status.success?
           Rails.logger.error("[wg-reload] wg syncconf #{interface_name} failed: #{out}")
